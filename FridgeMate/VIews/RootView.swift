@@ -13,7 +13,7 @@ struct RootView: View {
             // 自定义 TabBar 外观
             let appearance = UITabBarAppearance()
             appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = UIColor(named: "DarkGreen") // 你在 Assets 里自定义的颜色名
+            appearance.backgroundColor = UIColor(named: "BarGreen") // 你在 Assets 里自定义的颜色名
         
 
             // 改变未选中图标和文字颜色
@@ -36,9 +36,9 @@ struct RootView: View {
                     Label ("Scan", systemImage: "camera.viewfinder")
                 }
             
-            PantryView()
+            GroceriesView()
                 .tabItem{
-                    Label ("Pantry", systemImage: "list.bullet.clipboard")
+                    Label ("Groceries", systemImage: "list.bullet.clipboard")
                 }
             
             RecipeView()
@@ -52,7 +52,6 @@ struct RootView: View {
                     Label ("Settings", systemImage: "gearshape")
                 }
         }
-        //.accentColor(Color("MainGreen"))
     }
 }
 
