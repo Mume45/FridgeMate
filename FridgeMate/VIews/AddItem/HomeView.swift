@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct HomeView: View {
+    // 点击手动添加弹出弹窗
+    @State private var showManualAdd = false
+    
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -64,8 +68,7 @@ struct HomeView: View {
                         
                         // 手动添加按钮
                         Button (action: {
-                            // TODO: 跳转到手动添加页面
-                            print("Manual Add button tapped")
+                            showManualAdd = true
                         }) {
                             HStack {
                                 Image(systemName: "pencil")
@@ -78,6 +81,10 @@ struct HomeView: View {
                             .cornerRadius(10)
                             .shadow(radius: 2)
                         }
+                        .sheet(isPresented: $showManualAdd) {
+                            ManualAddView()
+                        }
+                        
                     }
                     .padding(.horizontal)
                     

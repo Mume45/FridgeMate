@@ -39,11 +39,12 @@ struct ContentView: View {
                 NavigationLink(destination: RootView()) {
                     Text("Get Started")
                         .font(.system(size: 25, weight: .semibold))
+                        .frame(width: 200, height: 40)
                         .padding()
                         .foregroundColor(.white)
                         .background(Color("ButtonDarkGreen"))
                         .cornerRadius(20)
-                        .shadow(radius: 3)
+                        .shadow(radius: 1)
                     
                 }
 

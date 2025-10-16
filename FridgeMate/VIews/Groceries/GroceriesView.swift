@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct GroceriesView: View {
+    // 添加要买的食物
+    @State private var showAddItemSheet = false
+    @State private var newItemName = ""
     
     // 模拟数据
     @State private var groceries = [
@@ -85,6 +88,29 @@ struct GroceriesView: View {
 
                         }
                     }
+                    
+                    
+                    // 添加待买食物按钮
+                    Button(action: {
+                        // TODO: 实现添加待买食物弹窗功能
+                        showAddItemSheet = true
+                    }) {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundColor(.green)
+                            Text("Add Item")
+                                .foregroundColor(.black)
+                                .fontWeight(.medium)
+                        }
+                        .padding()
+                        .frame(width: 220, height: 50)
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .shadow(radius: 2)
+                        .padding(.horizontal)
+                        .padding(.bottom, 80)
+                    }
+                    
                     
                 }
             }

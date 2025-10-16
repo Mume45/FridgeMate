@@ -41,7 +41,7 @@ struct RootView: View {
                     Label ("Groceries", systemImage: "list.bullet.clipboard")
                 }
             
-            RecipeView()
+            RecipesView()
                 .tabItem {
                     Label ("Recipes", systemImage: "book")
                 }
