@@ -9,27 +9,32 @@ import SwiftUI
 
 struct BeginnerRecipeCardView: View {
     let recipe: Recipe
+    let onTap: () -> Void
     
     var body: some View {
-        VStack {
-            if let imageName = recipe.imageName {
-                Image(imageName)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 140, height: 120)
-                    .clipped()
-                    .cornerRadius(12)
+        Button(action: {
+            onTap()
+        }) {
+            VStack {
+                if let imageName = recipe.imageName {
+                    Image(imageName)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 140, height: 120)
+                        .clipped()
+                        .cornerRadius(12)
+                }
+
+                Text(recipe.name)
+                    .font(.headline)
+                    .foregroundColor(.black)
+                    .lineLimit(1)
             }
-            
-            Text(recipe.name)
-                .font(.headline)
-                .foregroundColor(.black)
-                .lineLimit(1)
+            .padding(8)
+            .background(Color.white)
+            .cornerRadius(15)
+            .shadow(radius: 2)
         }
-        .padding(8)
-        .background(Color.white)
-        .cornerRadius(15)
-        .shadow(radius: 2)
     }
 }
 
@@ -40,5 +45,7 @@ struct BeginnerRecipeCardView: View {
         kind: .beginner,
         intro: "A simple and tasty dish for beginners.",
         imageName: "Pizza"
-    ))
+        ),
+        onTap: {}
+    )
 }

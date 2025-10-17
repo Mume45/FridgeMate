@@ -21,7 +21,8 @@ struct UserRecipeCardView: View {
                 
                 Spacer()
                 
-                Button("Check Stocks") {
+                // 点击文字弹出弹窗
+                Button("Check Inventory") {
                     onCheckStock()
                 }
                 .font(.subheadline)
