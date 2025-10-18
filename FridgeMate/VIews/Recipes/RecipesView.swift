@@ -4,12 +4,14 @@
 //
 //  Created by 孙雨晗 on 15/10/2025.
 
+// 加入了数据保存
+// 左滑可以删除菜谱
 
 import SwiftUI
 
 struct RecipesView: View {
     
-    // 判断是否选中内置入门菜谱+相应弹窗
+    // 是否选中内置入门菜谱+相应弹窗
     @State private var selectedRecipe: Recipe? = nil
     
     // 判断是否选中用户菜谱的库存对比按钮+相应弹窗
@@ -134,7 +136,7 @@ struct RecipesView: View {
                     .padding(.horizontal)
                     .padding(.top, 20)
                     
-                    // 用 List 承载，才能左滑删除；外观通过 list 修饰保持不变
+                    // 左滑删除；外观通过 list 修饰保持不变
                     List {
                         ForEach(userRecipes) { recipe in
                             UserRecipeCardView(
@@ -149,7 +151,7 @@ struct RecipesView: View {
                             .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 12, trailing: 16))
                             .listRowSeparator(.hidden)
                             .listRowBackground(Color.clear)
-                            // —— 左滑删除 ——
+                            // 左滑删除
                             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                 Button(role: .destructive) {
                                     recipeToDelete = recipe
@@ -200,7 +202,7 @@ struct RecipesView: View {
             .sheet(isPresented: $showAddRecipeSheet) {
                 AddRecipeView { name, desc, ings in
                     let new = Recipe(name: name, ingredients: ings, kind: .user, intro: desc)
-                    userRecipes.insert(new, at: 0)      // onChange 会自动保存
+                    userRecipes.insert(new, at: 0)
                 }
                 .presentationDetents([.large])
                 .presentationDragIndicator(.hidden)
@@ -221,7 +223,7 @@ struct RecipesView: View {
                     message: Text("This cannot be undone."),
                     primaryButton: .destructive(Text("Delete")) {
                         if let idx = userRecipes.firstIndex(where: { $0.id == r.id }) {
-                            userRecipes.remove(at: idx)   //
+                            userRecipes.remove(at: idx)   
                         }
                     },
                     secondaryButton: .cancel()

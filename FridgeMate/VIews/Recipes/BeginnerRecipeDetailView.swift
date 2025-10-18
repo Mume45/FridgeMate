@@ -54,9 +54,7 @@ struct BeginnerRecipeDetailView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Descriptions:")
                             .font(.subheadline)
-                        //.foregroundColor(.secondary)
                         
-                        // 简介（intro是可选类型 String?，需要提供默认值）
                         Text(recipe.intro ?? "No description available")
                             .font(.body)
                             .foregroundColor(.gray)

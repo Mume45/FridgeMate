@@ -3,210 +3,160 @@
 //  FridgeMate
 //
 //  Created by 孙雨晗 on 17/10/2025.
+//
 // 功能基本接入
+// 可以根据groceries页面的库存来提供已有食材和缺少食材
+// 勾选缺少食材可以加入shoppinglist
 
 import SwiftUI
 
 struct InventoryCheckPopupView: View {
     var recipe: Recipe
     
-    // 选中的缺失食材
+    @Environment(\.dismiss) private var dismiss
+    
+    @ObservedObject private var pantry = PantryStore.shared
+
+    // 交互状态
     @State private var selectedItems: Set<String> = []
-    private func toggleSelection(_ item: String) {
-        if selectedItems.contains(item) { selectedItems.remove(item) }
-        else { selectedItems.insert(item) }
-    }
-    
-    @Environment(\.dismiss) var dismiss
-    
-    //  由菜谱食材与库存对比得出
     @State private var itemsInStock: [String] = []
     @State private var missingItems: [String] = []
     
+    // 统一规范化：去空格+小写
+    @inline(__always)
     private func norm(_ s: String) -> String {
         s.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
     }
     
-    // 处理常见复数 -> 单数
-    private func singularize(_ word: String) -> String {
-        let w = norm(word)
-        if w.isEmpty { return w }
+    // 重新计算库存对比
+    private func recompute() {
+        let pantrySet = Set(pantry.items.map { norm($0) })   // 直接读被 @Published 的 items
+        let ingrs = recipe.ingredients
         
-        // 常见不规则或易错映射（
-        let irregular: [String: String] = [
-            "tomatoes": "tomato",
-            "potatoes": "potato",
-            "loaves": "loaf",
-            "leaves": "leaf",
-            "knives": "knife",
-            "mice": "mouse",
-            "geese": "goose",
-            "children": "child",
-            "men": "man",
-            "women": "woman",
-            "teeth": "tooth",
-            "feet": "foot",
-            "eggs": "egg"
-        ]
+        let inStock = ingrs.filter { pantrySet.contains(norm($0)) }
+        let missing = ingrs.filter { !pantrySet.contains(norm($0)) }
         
-        if let m = irregular[w] { return m }
+        self.itemsInStock = inStock
+        self.missingItems = missing
         
-        // 规则复数
-        if w.hasSuffix("ies"), w.count > 3 {
-            let base = w.dropLast(3)
-            return base + "y"
-        }
-        if w.hasSuffix("oes") || w.hasSuffix("xes") || w.hasSuffix("ses") || w.hasSuffix("zes") {
-            return String(w.dropLast(2))
-        }
-        if w.hasSuffix("s") && !w.hasSuffix("ss") {
-            return String(w.dropLast())
-        }
-        return w
+        // 如果缺货列表变化，把已选中但不在缺货里的项清掉
+        selectedItems = selectedItems.intersection(Set(missing))
     }
-    
-    private func computeComparison() {
-        PantryStore.shared.seedIfEmpty()
-        
 
-        let pantryRaw = PantryStore.shared.items
-        let pantrySingular = Set(pantryRaw.map { singularize($0) })
-        
-        var have: [String] = []
-        var miss: [String] = []
-        
-        for raw in recipe.ingredients {
-            let key = singularize(raw)
-            if pantrySingular.contains(key) {
-                have.append(raw)
-            } else {
-                miss.append(raw)
-            }
-        }
-        itemsInStock = have
-        missingItems = miss
+    private func toggleSelection(_ item: String) {
+        if selectedItems.contains(item) { selectedItems.remove(item) }
+        else { selectedItems.insert(item) }
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                
-                // 顶部标题和关闭按钮
-                ZStack {
-                    Text("Inventory Comparison")
-                        .font(.headline)
-                        .padding(.top, 6)
-                    HStack {
-                        Spacer()
-                        Button(action: { dismiss() }) {
-                            Image(systemName: "xmark")
-                                .foregroundColor(.black)
-                                .padding()
-                        }
+        VStack(spacing: 16) {
+            // 顶部标题 & 关闭
+            ZStack {
+                Text("Inventory Comparison")
+                    .font(.headline)
+                    .padding(.top)
+                HStack {
+                    Spacer()
+                    Button { dismiss() } label: {
+                        Image(systemName: "xmark")
+                            .foregroundColor(.black)
+                            .padding()
                     }
                 }
-                
-                // 描述卡片
-                if let intro = recipe.intro,
-                   !intro.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Description")
-                            .font(.subheadline)
-                            .bold()
-                        Text(intro)
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.white)
-                    .cornerRadius(12)
-                    .shadow(radius: 1)
-                }
-
-                Divider()
-
-                // 已有库存
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Items in Stock")
-                        .font(.subheadline)
-                        .bold()
-                    Text(itemsInStock.isEmpty ? "—" : itemsInStock.joined(separator: ", "))
-                        .font(.body)
+            }
+            
+            Divider()
+            
+            // Description
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Description")
+                    .font(.subheadline).bold()
+                Text(recipe.intro ?? "No description yet.")
+                    .foregroundColor(.gray)
+            }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.white)
+            .cornerRadius(12)
+            .shadow(radius: 1)
+            
+            Divider()
+            
+            // In Stock
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Items in Stock")
+                    .font(.subheadline).bold()
+                if itemsInStock.isEmpty {
+                    Text("None").foregroundColor(.secondary)
+                } else {
+                    Text(itemsInStock.joined(separator: ", "))
                         .foregroundColor(.green)
                 }
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.white)
-                .cornerRadius(12)
-                .shadow(radius: 1)
+            }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.white)
+            .cornerRadius(12)
+            .shadow(radius: 1)
+            
+            Divider()
+            
+            // Missing
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Missing Ingredients")
+                    .font(.subheadline).bold()
                 
-                Divider()
-                
-                // 缺失食材
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Missing Ingredients")
-                        .font(.subheadline)
-                        .bold()
-                    
-                    VStack(alignment: .leading, spacing: 6) {
+                if missingItems.isEmpty {
+                    Text("All ingredients are available 🎉")
+                        .foregroundColor(.secondary)
+                } else {
+                    VStack(alignment: .leading, spacing: 8) {
                         ForEach(missingItems, id: \.self) { item in
                             HStack(spacing: 8) {
                                 Image(systemName: selectedItems.contains(item) ? "checkmark.circle.fill" : "circle")
                                     .foregroundColor(selectedItems.contains(item) ? .green : .black)
                                     .font(.system(size: 20))
                                     .onTapGesture { toggleSelection(item) }
-                                Text(item).font(.body)
+                                Text(item)
                             }
-                        }
-                        if missingItems.isEmpty {
-                            Text("All ingredients are available.")
-                                .font(.body)
-                                .foregroundColor(.secondary)
                         }
                     }
                 }
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.white)
-                .cornerRadius(12)
-                .shadow(radius: 1)
-                
-                // 添加购物清单按钮
-                Button(action: {
-                    let toAdd = selectedItems.isEmpty ? Set(missingItems) :selectedItems
-                    ShoppingListStore.shared.add(items: toAdd)
-                    print("Add to shopping list:", selectedItems)
-                }) {
-                    Text("Add to the Shopping List")
-                        .foregroundColor(.black)
-                        .frame(width: 200, height: 30)
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .shadow(radius: 1)
-                }
-                .padding(.top, 10)
-                
-                Spacer(minLength: 8)
             }
             .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.white)
+            .cornerRadius(12)
+            .shadow(radius: 1)
+            
+            // 加入购物清单
+            Button {
+                let toAdd = Array(selectedItems)
+                if !toAdd.isEmpty {
+                    ShoppingListStore.shared.add(items: toAdd)
+                }
+                dismiss()
+            } label: {
+                Text(missingItems.isEmpty ? "Close" : "Add to the Shopping List")
+                    .foregroundColor(.black)
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .padding(.horizontal)
+                    .background(Color.white)
+                    .cornerRadius(12)
+                    .shadow(radius: 1)
+            }
+            .disabled(missingItems.isEmpty) // 没有缺货就禁用添加
+            .padding(.top, 6)
+            
+            Spacer(minLength: 0)
         }
+        .padding()
         .background(Color(.systemGray6))
+        .onAppear { recompute() }
+        //  库存变化时自动刷新
+        .onChange(of: pantry.items) { _ in
+            recompute()
+        }
         .presentationDetents([.medium, .large])
-        .onAppear { computeComparison() }
     }
-}
-
-#Preview {
-    InventoryCheckPopupView(
-        recipe: Recipe(
-            name: "Tomato Pasta",
-            ingredients: ["Tomato", "Pasta", "Garlic"],
-            kind: .beginner,
-            intro: "A simple and tasty dish for beginners.",
-            imageName: "Pizza"
-        )
-    )
 }

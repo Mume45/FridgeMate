@@ -4,6 +4,7 @@
 //
 //  Created by 孙雨晗 on 16/10/2025.
 //
+//用户自主添加菜谱
 
 import SwiftUI
 
@@ -32,7 +33,7 @@ struct UserRecipeCardView: View {
                 }
                 .font(.subheadline)
                 .foregroundColor(.green)
-                .buttonStyle(.plain)     //防止额外按钮影响
+                .buttonStyle(.plain)
             }
             
             // 把食材数组显示成一行文字

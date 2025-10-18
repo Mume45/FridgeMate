@@ -5,6 +5,7 @@
 //  Created by 孙雨晗 on 16/10/2025.
 
 // 已添加删除功能
+// 添加了把shopping list小组件放在主页上，会实时更新
 
 import SwiftUI
 import WidgetKit
@@ -15,17 +16,17 @@ struct GroceriesView: View {
     @State private var newItemName = ""
     @State private var addSheetDetent: PresentationDetent = .fraction(0.35)
 
-    // Add to Widget 提示
+    // Add to Widget
     @State private var showHowToAddWidgetAlert = false
     
-    //模拟数据
+    // 模拟库存数据
     @State private var groceries = [
         ("Tomatoes", "2", "2025/10/10", "Out of date", Color.red),
         ("Apples", "5", "2025/10/18", "Soon to Expire", Color.orange),
         ("Eggs", "10", "2025/11/01", "Fresh", Color.green)
     ]
     
-    // —— Shopping List（从持久化读取） ——
+    // Shopping List
     @State private var shoppingList: [String] = []
     /// 表示已买到 / 入库
     @State private var checkedItems: Set<String> = []
@@ -45,7 +46,7 @@ struct GroceriesView: View {
                 Color("BackgroundGrey").ignoresSafeArea()
                 
                 VStack {
-                    // —— 冰箱中的食材部分 ——
+                    // 冰箱中的食材部分
                     HStack {
                         Text("My Groceries")
                             .font(.title2).bold()
@@ -54,7 +55,6 @@ struct GroceriesView: View {
                     .padding(.horizontal)
                     .padding(.top, 20)
                     
-                    // 用 List 承载，才能稳定支持左滑删除；外观保持卡片风格
                     List {
                         ForEach(groceries.indices, id: \.self) { i in
                             let item = groceries[i]
@@ -76,16 +76,16 @@ struct GroceriesView: View {
                     .listStyle(.plain)
                     .scrollContentBackground(.hidden)
                     
-                    // —— 待购清单部分 ——
+                    // 待购清单部分
                     HStack {
                         Text("Shopping List")
                             .font(.title2).bold()
                         Spacer()
                     }
                     .padding(.horizontal)
-                    .padding(.top, 12)
+                    .padding(.top, 16)
                     
-                    // Shopping List：保持卡片外观 + 左滑删除
+                    // Shopping List
                     List {
                         ForEach(shoppingList, id: \.self) { item in
                             ShoppingListCardView(
@@ -99,7 +99,6 @@ struct GroceriesView: View {
                                         checkedItems.insert(item)
                                         syncPantry(for: item, checked: true)
                                     }
-                                    // 勾选仅切换 UI；如需也写入持久化，可在此处保存状态
                                     refreshWidgets()
                                 }
                             )
@@ -141,21 +140,18 @@ struct GroceriesView: View {
                     }
                     .padding(.top, 4)
                     
-                    // Add to Widget 按钮（刷新小组件并提示如何添加）
+                    //Add to Widget
                     Button {
                         refreshWidgets()
                         showHowToAddWidgetAlert = true
                     } label: {
                         Text("Add to Widget")
-                            .foregroundColor(.black)
-                            .fontWeight(.medium)
-                            .padding()
-                            .frame(width: 220, height: 50)
-                            .background(Color.white)
-                            .cornerRadius(12)
-                            .shadow(radius: 2)
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 6)
+                            .padding(.bottom, 28)
                     }
-                    .padding(.bottom, 80)
+                    .buttonStyle(.plain)
                     .alert("Add the Widget", isPresented: $showHowToAddWidgetAlert) {
                         Button("OK", role: .cancel) {}
                     } message: {
@@ -173,7 +169,7 @@ struct GroceriesView: View {
             shoppingList = list
             refreshWidgets()
         }
-        // Add Item 
+        //Add Item
         .sheet(isPresented: $showAddItemSheet) {
             VStack(spacing: 16) {
                 ZStack {
