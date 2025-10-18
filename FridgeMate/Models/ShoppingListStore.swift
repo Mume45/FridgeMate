@@ -12,6 +12,7 @@ import WidgetKit
 
 private let APP_GROUP_ID = "group.com.fridgemate.shared"
 private let SHOPPING_LIST_KEY = "shopping_list_v1"
+private let WIDGET_KIND = "FridgeMateWidget"
 
 final class ShoppingListStore {
     static let shared = ShoppingListStore()
@@ -20,10 +21,8 @@ final class ShoppingListStore {
     private let defaults = UserDefaults(suiteName: APP_GROUP_ID) ?? .standard
     private var items: [String] = []
 
-    // 读取全部
     func all() -> [String] { items }
 
-    // 添加单个
     func add(_ name: String) {
         let s = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !s.isEmpty else { return }
@@ -33,7 +32,6 @@ final class ShoppingListStore {
         }
     }
 
-    // 批量添加（数组）
     func add(items newItems: [String]) {
         var changed = false
         for raw in newItems {
@@ -47,12 +45,8 @@ final class ShoppingListStore {
         if changed { save() }
     }
 
-    // 批量添加（Set 重载，方便直接传 Set<String>）
-    func add(items set: Set<String>) {
-        add(items: Array(set))
-    }
+    func add(items set: Set<String>) { add(items: Array(set)) }
 
-    // 删除
     func remove(_ name: String) {
         if let i = items.firstIndex(where: { $0.lowercased() == name.lowercased() }) {
             items.remove(at: i)
@@ -60,10 +54,10 @@ final class ShoppingListStore {
         }
     }
 
+
     private func save() {
         defaults.set(items, forKey: SHOPPING_LIST_KEY)
-        // 每次变更后刷新 Widget 时间线
-        WidgetCenter.shared.reloadAllTimelines()
+        WidgetCenter.shared.reloadTimelines(ofKind: WIDGET_KIND)
     }
 
     private func load() {

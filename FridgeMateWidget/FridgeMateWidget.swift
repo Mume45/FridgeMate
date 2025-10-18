@@ -8,12 +8,11 @@
 import WidgetKit
 import SwiftUI
 
-import WidgetKit
-import SwiftUI
+// 与 App 里的常量一致
+public let APP_GROUP_ID = "group.com.fridgemate.shared"
+public let SHOPPING_LIST_KEY = "shopping_list_v1"
+public let WIDGET_KIND = "FridgeMateWidget"
 
-// 与 App 里的 APP_GROUP_ID 完全一致
-private let APP_GROUP_ID = "group.com.fridgemate.shared"
-private let SHOPPING_LIST_KEY = "shopping_list_v1"
 
 struct ShoppingListProvider: TimelineProvider {
     func placeholder(in context: Context) -> ShoppingListEntry {
@@ -26,9 +25,7 @@ struct ShoppingListProvider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<ShoppingListEntry>) -> Void) {
         let entry = ShoppingListEntry(date: Date(), items: loadItems())
-        // 30 分钟后自动刷新
-        let next = Calendar.current.date(byAdding: .minute, value: 30, to: Date())!
-        completion(Timeline(entries: [entry], policy: .after(next)))
+        completion(Timeline(entries: [entry], policy: .never))
     }
 
     private func loadItems() -> [String] {
@@ -43,18 +40,15 @@ struct ShoppingListEntry: TimelineEntry {
     let items: [String]
 }
 
+
 struct ShoppingListWidgetView: View {
     var entry: ShoppingListProvider.Entry
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("Shopping List")
-                .font(.headline)
-
+            Text("Shopping List").font(.headline)
             if entry.items.isEmpty {
-                Text("No items yet")
-                    .foregroundColor(.secondary)
-                    .font(.subheadline)
+                Text("No items yet").foregroundColor(.secondary).font(.subheadline)
             } else {
                 ForEach(entry.items.prefix(5), id: \.self) { item in
                     HStack(spacing: 6) {
@@ -75,12 +69,9 @@ struct ShoppingListWidgetView: View {
     }
 }
 
-
 struct FridgeMateWidget: Widget {
-    let kind: String = "FridgeMateWidget"
-
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: ShoppingListProvider()) { entry in
+        StaticConfiguration(kind: WIDGET_KIND, provider: ShoppingListProvider()) { entry in
             ShoppingListWidgetView(entry: entry)
         }
         .configurationDisplayName("Shopping List")

@@ -57,6 +57,7 @@
 		AB8024172EA375E100781849 /* FridgeMateWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FridgeMateWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB8024192EA375E100781849 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		AB80241B2EA375E100781849 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		AB8024342EA37BD900781849 /* FridgeMateWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FridgeMateWidgetExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -132,6 +133,7 @@
 		8FD807342E9F58C30037FF13 = {
 			isa = PBXGroup;
 			children = (
+				AB8024342EA37BD900781849 /* FridgeMateWidgetExtension.entitlements */,
 				8FD8073F2E9F58C30037FF13 /* FridgeMate */,
 				8FD807502E9F58C40037FF13 /* FridgeMateTests */,
 				8FD8075A2E9F58C40037FF13 /* FridgeMateUITests */,
@@ -509,9 +511,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FridgeMate/FridgeMate.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"FridgeMate/Preview Content\"";
+				DEVELOPMENT_TEAM = FAV2JM9TGA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -537,9 +541,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FridgeMate/FridgeMate.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"FridgeMate/Preview Content\"";
+				DEVELOPMENT_TEAM = FAV2JM9TGA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -633,8 +639,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = FridgeMateWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FAV2JM9TGA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FridgeMateWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = FridgeMateWidget;
@@ -659,8 +667,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = FridgeMateWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FAV2JM9TGA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FridgeMateWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = FridgeMateWidget;
