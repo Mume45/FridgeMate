@@ -10,6 +10,11 @@ import SwiftUI
 struct UserRecipeCardView: View {
     let recipe: Recipe
     var onCheckStock: () -> Void
+    var onTapRow: (() -> Void)? = nil
+    
+    private var ingredientsLine: String {
+        "Ingredients: " + recipe.ingredients.joined(separator: ",")
+    }
     
     var body: some View {
         VStack {
@@ -27,6 +32,7 @@ struct UserRecipeCardView: View {
                 }
                 .font(.subheadline)
                 .foregroundColor(.green)
+                .buttonStyle(.plain)     //防止额外按钮影响
             }
             
             // 把食材数组显示成一行文字
@@ -42,6 +48,10 @@ struct UserRecipeCardView: View {
         .background(Color.white)
         .cornerRadius(12)
         .shadow(radius: 2)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onTapRow?()
+        }
     }
 }
 
@@ -54,6 +64,9 @@ struct UserRecipeCardView: View {
         ),
         onCheckStock: {
             print("Show stock check modal here.")
+        },
+        onTapRow: {
+            print("Row tapped - show description.")
         }
     )
     .padding()

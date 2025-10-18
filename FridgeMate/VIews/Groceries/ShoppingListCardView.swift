@@ -18,9 +18,7 @@ struct ShoppingListCardView: View {
             Image(systemName: isChecked ? "checkmark.circle.fill" : "circle")
                 .foregroundColor(isChecked ?.green : .black)
                 .font(.system(size: 20))
-                .onTapGesture {
-                    onToggle()
-                }
+                .onTapGesture { onToggle() }
             
             // 食材名称部分
             Text(itemName)
@@ -34,9 +32,6 @@ struct ShoppingListCardView: View {
         .background(Color.white)
         .cornerRadius(12)
         .shadow(radius: 2)
-        
-
-        
     }
 }
 

@@ -5,6 +5,8 @@
 //  Created by 孙雨晗 on 17/10/2025.
 // 在菜单页面点击上方入门菜单（系统内置）的图片后，会弹出菜单详情弹窗
 
+
+
 import SwiftUI
 
 struct BeginnerRecipeDetailView: View {
@@ -12,6 +14,8 @@ struct BeginnerRecipeDetailView: View {
     
     @Environment(\.dismiss) var dismiss
     @State private var showInventoryCheck = false
+    
+    @State private var inventoryDetent: PresentationDetent = .large
     
     var body: some View {
         
@@ -35,7 +39,6 @@ struct BeginnerRecipeDetailView: View {
                     }
                 }
             }
-            
             Divider()
                 
                 // 菜谱内容区域
@@ -96,12 +99,12 @@ struct BeginnerRecipeDetailView: View {
             }
             .padding(.top)
             .background(Color(.systemGray6))
-            .presentationDetents([.medium]) // 控制底部弹窗高度
+            .presentationDetents([.medium])
             
             .sheet(isPresented: $showInventoryCheck) {
-                // 弹出的库存检查弹窗
                 InventoryCheckPopupView(recipe: recipe)
-            
+                    .presentationDetents([.medium, .large], selection: $inventoryDetent)
+                    .onAppear{ inventoryDetent = .large}
         }
     }
 }
