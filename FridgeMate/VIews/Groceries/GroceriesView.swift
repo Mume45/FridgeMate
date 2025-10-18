@@ -3,7 +3,7 @@
 //  FridgeMate
 //
 //  Created by 孙雨晗 on 16/10/2025.
-// ❗️目前没有删除功能
+
 
 import SwiftUI
 
@@ -44,9 +44,10 @@ struct GroceriesView: View {
                     .padding(.horizontal)
                     .padding(.top, 20)
                     
-                    // 食材卡片
-                    ScrollView {
-                        ForEach(groceries, id: \.0) { item in
+                    // 食材卡片 加入左滑删除功能
+                    List{
+                        ForEach(groceries.indices, id: \.self) { idx in
+                            let item = groceries[idx]
                             GroceriesCardView(
                                 name: item.0,
                                 amount: item.1,
@@ -55,9 +56,21 @@ struct GroceriesView: View {
                                 color: item.4
                             )
                             .padding(.horizontal)
-                            
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets())
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive){
+                                    groceries.remove(at: idx)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                         }
                     }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .frame(maxHeight: 300)
                     
                     // —— 待购清单部分 ——
                     HStack {
@@ -69,9 +82,9 @@ struct GroceriesView: View {
                     .padding(.horizontal)
                     .padding(.top, 20)
                     
-                    // 待购食材卡片
-                    ScrollView {
-                        ForEach(shoppingList, id: \.self) { item in
+                    // 待购食材卡片 加入左滑删除
+                    List {
+                        ForEach(Array(shoppingList.enumerated()), id: \.offset) { index, item in
                             ShoppingListCardView(
                                 itemName: item,
                                 isChecked: checkedItems.contains(item),
@@ -82,17 +95,28 @@ struct GroceriesView: View {
                                         checkedItems.insert(item)
                                     }
                                 }
-                                
                             )
                             .padding(.horizontal)
-
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets())
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    checkedItems.remove(item)
+                                    shoppingList.remove(at: index)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                         }
                     }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .frame(maxHeight: 360)
                     
                     
                     // 添加待买食物按钮
                     Button(action: {
-                        // TODO: 实现添加待买食物弹窗功能
                         showAddItemSheet = true
                     }) {
                         HStack {
@@ -110,13 +134,99 @@ struct GroceriesView: View {
                         .padding(.horizontal)
                         .padding(.bottom, 80)
                     }
-                    
-                    
+                    .sheet(isPresented: $showAddItemSheet) {
+                        AddToShoppingListSheet(
+                            name: $newItemName,
+                            onAdd: { name in
+                                addToShoppingList(name)
+                                newItemName = ""
+                                showAddItemSheet = false
+                            },
+                            onCancel: {
+                                newItemName = ""
+                                showAddItemSheet = false
+                            }
+                        )
+                        .presentationDetents([.fraction(0.35), .medium])
+                    }
                 }
             }
         }
     }
+    
+    private func addToShoppingList(_ raw: String) {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        let name = trimmed.prefix(1).uppercased() + trimmed.dropFirst()
+        if !shoppingList.contains(where: { $0.caseInsensitiveCompare(name) == .orderedSame }) {
+            shoppingList.insert(name, at: 0)
+        }
+    }
 }
+
+private struct AddToShoppingListSheet: View {
+    @Binding var name: String
+        var onAdd: (String) -> Void
+        var onCancel: () -> Void
+    
+    var body: some View {
+            VStack(spacing: 16) {
+                Capsule().fill(Color.secondary.opacity(0.3))
+                    .frame(width: 40, height: 5)
+                    .padding(.top, 8)
+
+                Text("Add to Shopping List")
+                    .font(.headline)
+
+                TextField("Item name (e.g., Milk)", text: $name)
+                    .textInputAutocapitalization(.words)
+                    .disableAutocorrection(true)
+                    .padding(12)
+                    .background(Color(.secondarySystemBackground))
+                    .cornerRadius(10)
+                    .submitLabel(.done)
+                    .onSubmit {
+                        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+                        guard !trimmed.isEmpty else { return }
+                        onAdd(trimmed)
+                    }
+
+                HStack {
+                    Button("Cancel", action: onCancel)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color(.systemGray5))
+                        .cornerRadius(10)
+
+                    Button("Add") {
+                        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+                        guard !trimmed.isEmpty else { return }
+                        onAdd(trimmed)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? Color.gray.opacity(0.4) : Color.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+
+                Spacer(minLength: 8)
+            }
+            .padding(.horizontal, 20)
+        }
+    }
+    
+    
+    
+    
+
+
+
+
+
+
+
 
 #Preview {
     GroceriesView()
