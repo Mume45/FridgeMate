@@ -7,12 +7,16 @@
 // 已添加删除功能
 
 import SwiftUI
+import WidgetKit
 
 struct GroceriesView: View {
     // 添加要买的食物
     @State private var showAddItemSheet = false
     @State private var newItemName = ""
     @State private var addSheetDetent: PresentationDetent = .fraction(0.35)
+
+    // Add to Widget 提示
+    @State private var showHowToAddWidgetAlert = false
     
     //模拟数据
     @State private var groceries = [
@@ -21,14 +25,18 @@ struct GroceriesView: View {
         ("Eggs", "10", "2025/11/01", "Fresh", Color.green)
     ]
     
-    // Shopping List
+    // —— Shopping List（从持久化读取） ——
     @State private var shoppingList: [String] = []
-    //表示已买到 / 入库
+    /// 表示已买到 / 入库
     @State private var checkedItems: Set<String> = []
     
     private func syncPantry(for item: String, checked: Bool) {
         if checked { PantryStore.shared.add(item) }
         else { PantryStore.shared.remove(item) }
+    }
+    
+    private func refreshWidgets() {
+        WidgetCenter.shared.reloadAllTimelines()
     }
     
     var body: some View {
@@ -46,6 +54,7 @@ struct GroceriesView: View {
                     .padding(.horizontal)
                     .padding(.top, 20)
                     
+                    // 用 List 承载，才能稳定支持左滑删除；外观保持卡片风格
                     List {
                         ForEach(groceries.indices, id: \.self) { i in
                             let item = groceries[i]
@@ -60,7 +69,6 @@ struct GroceriesView: View {
                             .listRowSeparator(.hidden)
                             .listRowBackground(Color.clear)
                         }
-                        // 左滑删除
                         .onDelete { indexSet in
                             groceries.remove(atOffsets: indexSet)
                         }
@@ -77,7 +85,7 @@ struct GroceriesView: View {
                     .padding(.horizontal)
                     .padding(.top, 12)
                     
-                    // Shopping List + 左滑删除
+                    // Shopping List：保持卡片外观 + 左滑删除
                     List {
                         ForEach(shoppingList, id: \.self) { item in
                             ShoppingListCardView(
@@ -91,6 +99,8 @@ struct GroceriesView: View {
                                         checkedItems.insert(item)
                                         syncPantry(for: item, checked: true)
                                     }
+                                    // 勾选仅切换 UI；如需也写入持久化，可在此处保存状态
+                                    refreshWidgets()
                                 }
                             )
                             .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 12, trailing: 16))
@@ -104,6 +114,7 @@ struct GroceriesView: View {
                             }
                             toRemove.forEach { ShoppingListStore.shared.remove($0) }
                             shoppingList = ShoppingListStore.shared.all()
+                            refreshWidgets()
                         }
                     }
                     .listStyle(.plain)
@@ -127,7 +138,28 @@ struct GroceriesView: View {
                         .cornerRadius(12)
                         .shadow(radius: 2)
                         .padding(.horizontal)
-                        .padding(.bottom, 80)
+                    }
+                    .padding(.top, 4)
+                    
+                    // Add to Widget 按钮（刷新小组件并提示如何添加）
+                    Button {
+                        refreshWidgets()
+                        showHowToAddWidgetAlert = true
+                    } label: {
+                        Text("Add to Widget")
+                            .foregroundColor(.black)
+                            .fontWeight(.medium)
+                            .padding()
+                            .frame(width: 220, height: 50)
+                            .background(Color.white)
+                            .cornerRadius(12)
+                            .shadow(radius: 2)
+                    }
+                    .padding(.bottom, 80)
+                    .alert("Add the Widget", isPresented: $showHowToAddWidgetAlert) {
+                        Button("OK", role: .cancel) {}
+                    } message: {
+                        Text("Long-press the Home Screen → tap “+” → search “FridgeMate” → add the “Shopping List” widget.")
                     }
                 }
             }
@@ -139,8 +171,9 @@ struct GroceriesView: View {
                 list = ShoppingListStore.shared.all()
             }
             shoppingList = list
+            refreshWidgets()
         }
-        // Add Item 弹窗
+        // Add Item 
         .sheet(isPresented: $showAddItemSheet) {
             VStack(spacing: 16) {
                 ZStack {
@@ -176,6 +209,7 @@ struct GroceriesView: View {
                     shoppingList = ShoppingListStore.shared.all()
                     newItemName = ""
                     showAddItemSheet = false
+                    refreshWidgets()
                 } label: {
                     Text("Add")
                         .foregroundColor(.black)

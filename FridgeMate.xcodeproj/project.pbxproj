@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		AB80241A2EA375E100781849 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB8024192EA375E100781849 /* WidgetKit.framework */; };
+		AB80241C2EA375E100781849 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB80241B2EA375E100781849 /* SwiftUI.framework */; };
+		AB80242D2EA375E300781849 /* FridgeMateWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AB8024172EA375E100781849 /* FridgeMateWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		8FD8074E2E9F58C40037FF13 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,13 +27,47 @@
 			remoteGlobalIDString = 8FD8073C2E9F58C30037FF13;
 			remoteInfo = FridgeMate;
 		};
+		AB80242B2EA375E300781849 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8FD807352E9F58C30037FF13 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AB8024162EA375E100781849;
+			remoteInfo = FridgeMateWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AB8024322EA375E300781849 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				AB80242D2EA375E300781849 /* FridgeMateWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		8FD8073D2E9F58C30037FF13 /* FridgeMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FridgeMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FD8074D2E9F58C40037FF13 /* FridgeMateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FridgeMateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FD807572E9F58C40037FF13 /* FridgeMateUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FridgeMateUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB8024172EA375E100781849 /* FridgeMateWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FridgeMateWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB8024192EA375E100781849 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		AB80241B2EA375E100781849 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AB80242E2EA375E300781849 /* Exceptions for "FridgeMateWidget" folder in "FridgeMateWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = AB8024162EA375E100781849 /* FridgeMateWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		8FD8073F2E9F58C30037FF13 /* FridgeMate */ = {
@@ -43,6 +83,14 @@
 		8FD8075A2E9F58C40037FF13 /* FridgeMateUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = FridgeMateUITests;
+			sourceTree = "<group>";
+		};
+		AB80241D2EA375E100781849 /* FridgeMateWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AB80242E2EA375E300781849 /* Exceptions for "FridgeMateWidget" folder in "FridgeMateWidgetExtension" target */,
+			);
+			path = FridgeMateWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +117,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AB8024142EA375E100781849 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AB80241C2EA375E100781849 /* SwiftUI.framework in Frameworks */,
+				AB80241A2EA375E100781849 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -78,6 +135,8 @@
 				8FD8073F2E9F58C30037FF13 /* FridgeMate */,
 				8FD807502E9F58C40037FF13 /* FridgeMateTests */,
 				8FD8075A2E9F58C40037FF13 /* FridgeMateUITests */,
+				AB80241D2EA375E100781849 /* FridgeMateWidget */,
+				AB8024182EA375E100781849 /* Frameworks */,
 				8FD8073E2E9F58C30037FF13 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,8 +147,18 @@
 				8FD8073D2E9F58C30037FF13 /* FridgeMate.app */,
 				8FD8074D2E9F58C40037FF13 /* FridgeMateTests.xctest */,
 				8FD807572E9F58C40037FF13 /* FridgeMateUITests.xctest */,
+				AB8024172EA375E100781849 /* FridgeMateWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		AB8024182EA375E100781849 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AB8024192EA375E100781849 /* WidgetKit.framework */,
+				AB80241B2EA375E100781849 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -102,10 +171,12 @@
 				8FD807392E9F58C30037FF13 /* Sources */,
 				8FD8073A2E9F58C30037FF13 /* Frameworks */,
 				8FD8073B2E9F58C30037FF13 /* Resources */,
+				AB8024322EA375E300781849 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				AB80242C2EA375E300781849 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				8FD8073F2E9F58C30037FF13 /* FridgeMate */,
@@ -163,6 +234,28 @@
 			productReference = 8FD807572E9F58C40037FF13 /* FridgeMateUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		AB8024162EA375E100781849 /* FridgeMateWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AB80242F2EA375E300781849 /* Build configuration list for PBXNativeTarget "FridgeMateWidgetExtension" */;
+			buildPhases = (
+				AB8024132EA375E100781849 /* Sources */,
+				AB8024142EA375E100781849 /* Frameworks */,
+				AB8024152EA375E100781849 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				AB80241D2EA375E100781849 /* FridgeMateWidget */,
+			);
+			name = FridgeMateWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = FridgeMateWidgetExtension;
+			productReference = AB8024172EA375E100781849 /* FridgeMateWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -184,6 +277,9 @@
 						CreatedOnToolsVersion = 16.2;
 						TestTargetID = 8FD8073C2E9F58C30037FF13;
 					};
+					AB8024162EA375E100781849 = {
+						CreatedOnToolsVersion = 16.2;
+					};
 				};
 			};
 			buildConfigurationList = 8FD807382E9F58C30037FF13 /* Build configuration list for PBXProject "FridgeMate" */;
@@ -203,6 +299,7 @@
 				8FD8073C2E9F58C30037FF13 /* FridgeMate */,
 				8FD8074C2E9F58C40037FF13 /* FridgeMateTests */,
 				8FD807562E9F58C40037FF13 /* FridgeMateUITests */,
+				AB8024162EA375E100781849 /* FridgeMateWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -223,6 +320,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		8FD807552E9F58C40037FF13 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB8024152EA375E100781849 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -253,6 +357,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AB8024132EA375E100781849 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -265,6 +376,11 @@
 			isa = PBXTargetDependency;
 			target = 8FD8073C2E9F58C30037FF13 /* FridgeMate */;
 			targetProxy = 8FD807582E9F58C40037FF13 /* PBXContainerItemProxy */;
+		};
+		AB80242C2EA375E300781849 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AB8024162EA375E100781849 /* FridgeMateWidgetExtension */;
+			targetProxy = AB80242B2EA375E300781849 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -512,6 +628,58 @@
 			};
 			name = Release;
 		};
+		AB8024302EA375E300781849 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FridgeMateWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FridgeMateWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = au.edu.uts.FridgeMate.FridgeMateWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AB8024312EA375E300781849 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FridgeMateWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FridgeMateWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = au.edu.uts.FridgeMate.FridgeMateWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -547,6 +715,15 @@
 			buildConfigurations = (
 				8FD807682E9F58C40037FF13 /* Debug */,
 				8FD807692E9F58C40037FF13 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AB80242F2EA375E300781849 /* Build configuration list for PBXNativeTarget "FridgeMateWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AB8024302EA375E300781849 /* Debug */,
+				AB8024312EA375E300781849 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

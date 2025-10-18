@@ -3,7 +3,7 @@
 //  FridgeMate
 //
 //  Created by 孙雨晗 on 17/10/2025.
-// TODO: 功能未接入
+// 功能基本接入
 
 import SwiftUI
 

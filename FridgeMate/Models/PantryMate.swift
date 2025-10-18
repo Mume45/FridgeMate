@@ -2,7 +2,7 @@
 //  PantryMate.swift
 //  FridgeMate
 //
-//  Created by 袁钟盈 on 2025/10/18.
+//  Created by ZhongyingYuan, 24699175 on 2025/10/18.
 //
 
 import Foundation
