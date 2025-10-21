@@ -11,138 +11,138 @@ import SwiftUI
 import WidgetKit
 
 struct GroceriesView: View {
-    // pantryMate读取
+    // 库存（My Groceries）
     @ObservedObject private var pantry = PantryStore.shared
 
-    // 添加要买的食物（Shopping List）
+    // 添加 Shopping List 项
     @State private var showAddItemSheet = false
     @State private var newItemName = ""
     @State private var addSheetDetent: PresentationDetent = .fraction(0.35)
 
     // Add to Widget
     @State private var showHowToAddWidgetAlert = false
-    
-    //  Shopping List
+
+    // Shopping List
     @State private var shoppingList: [String] = []
-    // 表示已买到 / 入库
     @State private var checkedItems: Set<String> = []
-    
-    
-    private var groceries: [(String, String, String, String, Color)] {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd"
-        
-        return pantry.all().map { item in
-            // 名称
+
+    // 编辑弹窗状态（不用引用 GroceryItem 类型，避免冲突）
+    @State private var editingItemName: String? = nil
+    @State private var editingItemAmount: Int = 1
+    @State private var editingItemExpiration: Date? = nil
+
+    // 日期格式
+    private let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy/MM/dd"
+        return f
+    }()
+
+    // 映射 My Groceries 行数据（仅用字段，避免类型名）
+    private var groceriesRows: [(name: String, amountText: String, expirationText: String, status: String, color: Color, amount: Int, expiration: Date?)] {
+        pantry.all().map { item in
             let name = item.name
-            // 数量（转成字符串以吻合你原 UI）
-            let amountText = String(item.amount)
-            // 到期日
-            let expirationText: String = {
-                if let exp = item.expiration {
-                    return formatter.string(from: exp)
-                } else {
-                    return "—"
-                }
-            }()
-            let (status, color): (String, Color) = statusAndColor(for: item)
-            return (name, amountText, expirationText, status, color)
+            let amount = item.amount
+            let amountText = String(amount)
+            let expiration = item.expiration
+            let expirationText = (expiration != nil) ? dateFormatter.string(from: expiration!) : "—"
+            let (status, color) = statusAndColor(amount: amount, expiration: expiration)
+            return (name, amountText, expirationText, status, color, amount, expiration)
         }
     }
-    
-    // 生成状态与颜色
-    private func statusAndColor(for item: GroceryItem) -> (String, Color) {
-        if item.amount <= 0 {
-            // 数量为 0 视为“缺货”，
-            return ("Out of stock", Color.gray)
-        }
-        if let exp = item.expiration {
-            // 只比较到“日”
+
+    // 不引用 GroceryItem 类型，改为用字段判断
+    private func statusAndColor(amount: Int, expiration: Date?) -> (String, Color) {
+        if amount <= 0 { return ("Out of stock", .gray) }
+        if let exp = expiration {
             let cal = Calendar.current
             let today = cal.startOfDay(for: Date())
             let expDay = cal.startOfDay(for: exp)
-            if expDay < today {
-                return ("Out of date", Color.red)
-            } else {
-                // 距离到期天数
-                if let days = cal.dateComponents([.day], from: today, to: expDay).day, days <= 7 {
-                    return ("Soon to Expire", Color.orange)
-                } else {
-                    return ("Fresh", Color.green)
-                }
+            if expDay < today { return ("Out of date", .red) }
+            if let days = cal.dateComponents([.day], from: today, to: expDay).day, days <= 7 {
+                return ("Soon to Expire", .orange)
             }
+            return ("Fresh", .green)
         } else {
-            // 没有到期日则视为“新鲜”
-            return ("Fresh", Color.green)
+            return ("Fresh", .green)
         }
     }
-    
-   
+
+    // 勾选 Shopping List → 入库；取消 → 从库存移除
     private func syncPantry(for item: String, checked: Bool) {
         if checked {
-            // 购入 → 入库（
             pantry.upsert(name: item, amount: 1, expiration: nil)
         } else {
-            // 取消购入 → 从库存移除该名称
             pantry.remove(name: item)
         }
     }
-    
+
     private func refreshWidgets() {
         WidgetCenter.shared.reloadAllTimelines()
     }
-    
+
+    // 打开编辑页（用字段存状态）
+    private func openEditor(name: String, amount: Int, expiration: Date?) {
+        editingItemName = name
+        editingItemAmount = max(1, amount)
+        editingItemExpiration = expiration
+    }
+
+    // 保存编辑
+    private func saveEditor(name: String, amount: Int, expiration: Date?) {
+        pantry.upsert(name: name, amount: max(1, amount), expiration: expiration)
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
                 Color("BackgroundGrey").ignoresSafeArea()
-                
+
                 VStack {
-                    // 冰箱中的食材部分
+                    // —— My Groceries —— //
                     HStack {
-                        Text("My Groceries")
-                            .font(.title2).bold()
+                        Text("My Groceries").font(.title2).bold()
                         Spacer()
                     }
                     .padding(.horizontal)
                     .padding(.top, 20)
-                    
-                   
+
                     List {
-                        ForEach(groceries.indices, id: \.self) { i in
-                            let item = groceries[i]
+                        ForEach(groceriesRows.indices, id: \.self) { i in
+                            let row = groceriesRows[i]
                             GroceriesCardView(
-                                name: item.0,
-                                amount: item.1,
-                                expiration: item.2,
-                                status: item.3,
-                                color: item.4
+                                name: row.name,
+                                amount: row.amountText,
+                                expiration: row.expirationText,
+                                status: row.status,
+                                color: row.color
                             )
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                openEditor(name: row.name, amount: row.amount, expiration: row.expiration)
+                            }
                             .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 12, trailing: 16))
                             .listRowSeparator(.hidden)
                             .listRowBackground(Color.clear)
                         }
                         .onDelete { indexSet in
-                            // 删除选中的库存项
                             let names = indexSet.compactMap { idx in
-                                groceries.indices.contains(idx) ? groceries[idx].0 : nil
+                                groceriesRows.indices.contains(idx) ? groceriesRows[idx].name : nil
                             }
                             names.forEach { pantry.remove(name: $0) }
                         }
                     }
                     .listStyle(.plain)
                     .scrollContentBackground(.hidden)
-                    
-                    // 待购清单部分
+
+                    // —— Shopping List —— //
                     HStack {
-                        Text("Shopping List")
-                            .font(.title2).bold()
+                        Text("Shopping List").font(.title2).bold()
                         Spacer()
                     }
                     .padding(.horizontal)
                     .padding(.top, 16)
-                    
-                    // Shopping List
+
                     List {
                         ForEach(shoppingList, id: \.self) { item in
                             ShoppingListCardView(
@@ -150,11 +150,15 @@ struct GroceriesView: View {
                                 isChecked: checkedItems.contains(item),
                                 onToggle: {
                                     if checkedItems.contains(item) {
+                                        // 取消购入：从库存移除（可按需决定是否加回清单）
                                         checkedItems.remove(item)
                                         syncPantry(for: item, checked: false)
                                     } else {
+                                        // 勾选购入：加入库存，并从清单移除
                                         checkedItems.insert(item)
                                         syncPantry(for: item, checked: true)
+                                        ShoppingListStore.shared.remove(item)
+                                        shoppingList = ShoppingListStore.shared.all()
                                     }
                                     refreshWidgets()
                                 }
@@ -168,7 +172,6 @@ struct GroceriesView: View {
                             for idx in indexSet where shoppingList.indices.contains(idx) {
                                 toRemove.append(shoppingList[idx])
                             }
-                           
                             toRemove.forEach { ShoppingListStore.shared.remove($0) }
                             shoppingList = ShoppingListStore.shared.all()
                             refreshWidgets()
@@ -176,18 +179,15 @@ struct GroceriesView: View {
                     }
                     .listStyle(.plain)
                     .scrollContentBackground(.hidden)
-                    
-                    // 添加待买食物按钮
+
+                    // —— Add Item —— //
                     Button(action: {
                         addSheetDetent = .fraction(0.35)
                         showAddItemSheet = true
                     }) {
                         HStack {
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundColor(.green)
-                            Text("Add Item")
-                                .foregroundColor(.black)
-                                .fontWeight(.medium)
+                            Image(systemName: "plus.circle.fill").foregroundColor(.green)
+                            Text("Add Item").foregroundColor(.black).fontWeight(.medium)
                         }
                         .padding()
                         .frame(width: 220, height: 50)
@@ -197,8 +197,8 @@ struct GroceriesView: View {
                         .padding(.horizontal)
                     }
                     .padding(.top, 4)
-                    
-                    // Add to Widget
+
+                    // —— Add to Widget 提示 —— //
                     Button {
                         refreshWidgets()
                         showHowToAddWidgetAlert = true
@@ -220,15 +220,25 @@ struct GroceriesView: View {
         }
         .onAppear {
             // 初始化购物清单
-            var list = ShoppingListStore.shared.all()
-            if list.isEmpty {
-                ShoppingListStore.shared.add(items: ["Cheese", "Tomatoes"])
-                list = ShoppingListStore.shared.all()
-            }
-            shoppingList = list
+            shoppingList = ShoppingListStore.shared.all()
             refreshWidgets()
         }
-        // Add Item
+        // —— 编辑库存弹窗（不用引用 GroceryItem 类型） —— //
+        .sheet(isPresented: Binding(
+            get: { editingItemName != nil },
+            set: { if !$0 { editingItemName = nil } }
+        )) {
+            if let name = editingItemName {
+                EditGroceryView(
+                    name: name,
+                    amount: editingItemAmount,
+                    expiration: editingItemExpiration
+                ) { newName, newAmount, newExp in
+                    saveEditor(name: newName, amount: newAmount, expiration: newExp)
+                }
+            }
+        }
+        // Add Item 
         .sheet(isPresented: $showAddItemSheet) {
             AddShoppingItemView(isPresented: $showAddItemSheet, shoppingList: $shoppingList)
                 .presentationDetents([addSheetDetent])

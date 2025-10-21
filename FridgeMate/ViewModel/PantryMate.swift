@@ -7,7 +7,7 @@
 
 import Foundation
 
-//物品数据模型（名称 + 数量 + 过期日）
+//物品数据模型（
 struct GroceryItem: Identifiable, Codable, Hashable {
     let id: UUID
     var name: String
@@ -23,7 +23,7 @@ struct GroceryItem: Identifiable, Codable, Hashable {
         self.expiration = expiration
     }
 
-    /// 规范化：去首尾空格 + 小写，用于对比/去重
+    
     static func norm(_ s: String) -> String {
         s.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
     }

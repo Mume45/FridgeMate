@@ -9,24 +9,22 @@
 import Foundation
 import WidgetKit
 
-
-private let APP_GROUP_ID = "group.com.fridgemate.shared"
-private let SHOPPING_LIST_KEY = "shopping_list_v1"
-private let WIDGET_KIND = "FridgeMateWidget"
-
 final class ShoppingListStore {
     static let shared = ShoppingListStore()
-    private init() { load() }
+    private init() {
+        load()
+        sanitizeIfNeeded()
+    }
 
-    private let defaults = UserDefaults(suiteName: APP_GROUP_ID) ?? .standard
+    private let defaults = UserDefaults(suiteName: APP_GROUP_ID)!
     private var items: [String] = []
 
     func all() -> [String] { items }
 
     func add(_ name: String) {
-        let s = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let s = normalized(name)
         guard !s.isEmpty else { return }
-        if !items.contains(where: { $0.lowercased() == s.lowercased() }) {
+        if !items.contains(where: { $0.caseInsensitiveCompare(s) == .orderedSame }) {
             items.append(s)
             save()
         }
@@ -35,32 +33,78 @@ final class ShoppingListStore {
     func add(items newItems: [String]) {
         var changed = false
         for raw in newItems {
-            let s = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+            let s = normalized(raw)
             guard !s.isEmpty else { continue }
-            if !items.contains(where: { $0.lowercased() == s.lowercased() }) {
-                items.append(s)
-                changed = true
+            if !items.contains(where: { $0.caseInsensitiveCompare(s) == .orderedSame }) {
+                items.append(s); changed = true
             }
         }
         if changed { save() }
     }
 
-    func add(items set: Set<String>) { add(items: Array(set)) }
-
     func remove(_ name: String) {
-        if let i = items.firstIndex(where: { $0.lowercased() == name.lowercased() }) {
+        let s = normalized(name)
+        if let i = items.firstIndex(where: { $0.caseInsensitiveCompare(s) == .orderedSame }) {
             items.remove(at: i)
             save()
         }
     }
 
+    func clearAll() {
+        items.removeAll()
+        save()
+    }
+
+    // MARK: - Private
+    private func normalized(_ text: String) -> String {
+        text.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
 
     private func save() {
         defaults.set(items, forKey: SHOPPING_LIST_KEY)
-        WidgetCenter.shared.reloadTimelines(ofKind: WIDGET_KIND)
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     private func load() {
         items = defaults.stringArray(forKey: SHOPPING_LIST_KEY) ?? []
+    }
+
+    /// 第一次启动此版本时做一次清理：去掉 `t:` 示范项、去重 & 去空白
+    private func sanitizeIfNeeded() {
+        let flagKey = "did_sanitize_v1"
+        if defaults.bool(forKey: flagKey) { return }
+
+        var changed = false
+
+        // 1) 去掉以 t: 开头的示例项
+        let filtered = items.filter { !$0.lowercased().hasPrefix("t:") }
+        if filtered.count != items.count {
+            items = filtered
+            changed = true
+        }
+
+        // 2) 去空白
+        let trimmed = items.map { normalized($0) }.filter { !$0.isEmpty }
+        if trimmed.count != items.count {
+            items = trimmed
+            changed = true
+        }
+
+        // 3) 忽略大小写去重（保持原顺序）
+        var seen = Set<String>()
+        var deduped: [String] = []
+        for s in items {
+            let key = s.lowercased()
+            if !seen.contains(key) {
+                seen.insert(key)
+                deduped.append(s)
+            } else {
+                changed = true
+            }
+        }
+        items = deduped
+
+        if changed { save() }
+        defaults.set(true, forKey: flagKey)
     }
 }

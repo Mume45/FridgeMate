@@ -61,9 +61,17 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AB6347B12EA700300044CFEE /* Exceptions for "FridgeMate" folder in "FridgeMateWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/SharedConstants.swift,
+			);
+			target = AB8024162EA375E100781849 /* FridgeMateWidgetExtension */;
+		};
 		AB80242E2EA375E300781849 /* Exceptions for "FridgeMateWidget" folder in "FridgeMateWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				FridgeMateWidgetBundle.swift,
 				Info.plist,
 			);
 			target = AB8024162EA375E100781849 /* FridgeMateWidgetExtension */;
@@ -73,6 +81,9 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		8FD8073F2E9F58C30037FF13 /* FridgeMate */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AB6347B12EA700300044CFEE /* Exceptions for "FridgeMate" folder in "FridgeMateWidgetExtension" target */,
+			);
 			path = FridgeMate;
 			sourceTree = "<group>";
 		};
@@ -515,7 +526,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"FridgeMate/Preview Content\"";
-				DEVELOPMENT_TEAM = S5JST89JDX;
+				DEVELOPMENT_TEAM = FAV2JM9TGA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -545,7 +556,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"FridgeMate/Preview Content\"";
-				DEVELOPMENT_TEAM = S5JST89JDX;
+				DEVELOPMENT_TEAM = FAV2JM9TGA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -642,7 +653,7 @@
 				CODE_SIGN_ENTITLEMENTS = FridgeMateWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = S5JST89JDX;
+				DEVELOPMENT_TEAM = FAV2JM9TGA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FridgeMateWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = FridgeMateWidget;
@@ -670,7 +681,7 @@
 				CODE_SIGN_ENTITLEMENTS = FridgeMateWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = S5JST89JDX;
+				DEVELOPMENT_TEAM = FAV2JM9TGA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FridgeMateWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = FridgeMateWidget;
