@@ -9,16 +9,18 @@
 import Foundation
 import WidgetKit
 
-final class ShoppingListStore {
+final class ShoppingListStore: ObservableObject {
     static let shared = ShoppingListStore()
     private init() {
         load()
         sanitizeIfNeeded()
     }
 
-    private let defaults = UserDefaults(suiteName: APP_GROUP_ID)!
-    private var items: [String] = []
 
+    private let defaults = UserDefaults(suiteName: APP_GROUP_ID) ?? .standard
+    @Published private var items: [String] = []
+
+    // MARK: - Public API
     func all() -> [String] { items }
 
     func add(_ name: String) {
@@ -36,7 +38,8 @@ final class ShoppingListStore {
             let s = normalized(raw)
             guard !s.isEmpty else { continue }
             if !items.contains(where: { $0.caseInsensitiveCompare(s) == .orderedSame }) {
-                items.append(s); changed = true
+                items.append(s)
+                changed = true
             }
         }
         if changed { save() }
@@ -63,34 +66,36 @@ final class ShoppingListStore {
     private func save() {
         defaults.set(items, forKey: SHOPPING_LIST_KEY)
         WidgetCenter.shared.reloadAllTimelines()
+        print("Saved shopping list:", items)
     }
 
     private func load() {
         items = defaults.stringArray(forKey: SHOPPING_LIST_KEY) ?? []
+        print("Loaded shopping list:", items)
     }
 
-    /// 第一次启动此版本时做一次清理：去掉 `t:` 示范项、去重 & 去空白
+    /// 启动时执行一次清理逻辑（去掉错误数据 / 重复项 / 无效项）
     private func sanitizeIfNeeded() {
         let flagKey = "did_sanitize_v1"
         if defaults.bool(forKey: flagKey) { return }
 
         var changed = false
 
-        // 1) 去掉以 t: 开头的示例项
+        // 去掉以 t: 开头的示例项
         let filtered = items.filter { !$0.lowercased().hasPrefix("t:") }
         if filtered.count != items.count {
             items = filtered
             changed = true
         }
 
-        // 2) 去空白
+        // 去空白
         let trimmed = items.map { normalized($0) }.filter { !$0.isEmpty }
         if trimmed.count != items.count {
             items = trimmed
             changed = true
         }
 
-        // 3) 忽略大小写去重（保持原顺序）
+        // 忽略大小写去重
         var seen = Set<String>()
         var deduped: [String] = []
         for s in items {
@@ -106,5 +111,6 @@ final class ShoppingListStore {
 
         if changed { save() }
         defaults.set(true, forKey: flagKey)
+        print("Sanitization done. Items:", items)
     }
 }
